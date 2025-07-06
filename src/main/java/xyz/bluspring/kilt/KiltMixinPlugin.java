@@ -24,15 +24,24 @@ public class KiltMixinPlugin implements IMixinConfigPlugin {
         this.mixinPackage = mixinPackage;
 
         try {
+            ClassLoader classLoader = this.getClass().getClassLoader();
+            Class<?> injectionCallbackClass = Class.forName("net.lenni0451.classtransform.InjectionCallback", true, classLoader);
+
+            injectionCallbackClass.getConstructor(boolean.class);
+            injectionCallbackClass.getMethod("isCancellable");
+
             KiltUnionFileSystemHelper.directlyLoadIntoClassLoader(FabricLauncherBase.getLauncher().getTargetClassLoader());
         } catch (Throwable e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Failed to initialize required class InjectionCallback", e);
         }
 
-        MixinExtrasBootstrap.init();
-        MixinConstraintsBootstrap.init(mixinPackage);
-
-        ExtensionRegistrar.register(new KiltMixinModifier());
+        try {
+            MixinExtrasBootstrap.init();
+            MixinConstraintsBootstrap.init(mixinPackage);
+            ExtensionRegistrar.register(new KiltMixinModifier());
+        } catch (Throwable t) {
+            throw new RuntimeException("Failed to initialize mixin extensions", t);
+        }
     }
 
     @Override
@@ -56,7 +65,6 @@ public class KiltMixinPlugin implements IMixinConfigPlugin {
 
     @Override
     public void acceptTargets(Set<String> myTargets, Set<String> otherTargets) {
-
     }
 
     @Override

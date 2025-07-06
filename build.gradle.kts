@@ -276,7 +276,7 @@ dependencies {
 
     // Knit Loader
     api(project(":loader"))
-    runtimeOnly(project(":loader:fabric", configuration = "namedElements"))
+    runtimeOnly(project(":loader:fabric"))
     include(project(":loader:fabric")) {
         isTransitive = false
     }
